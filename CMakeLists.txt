@@ -13,10 +13,19 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAGS_COMMON}")
 
 set(CMAKE_AUTOMOC ON)
 
+if (WIN32)
+	set (CMAKE_PREFIX_PATH "C:\\repo\\OpenCV\\build")
+	list(APPEND CMAKE_PREFIX_PATH "C:\\repo\\vcpkg\\installed\\x64-windows")
+	list(APPEND CMAKE_PREFIX_PATH "D:\\Qt\\Qt5.12.8\\5.12.8\\msvc2017_64")
+	list(APPEND CMAKE_PREFIX_PATH "C:\\repo\\ConfigReader\\build-cmake")
+	list(APPEND CMAKE_PREFIX_PATH "C:\\repo\\QtCommunicatorPlugin\\build")
+	find_package(spdlog CONFIG REQUIRED)
+	find_package(ConfigReader REQUIRED)
+endif (WIN32)
+
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Network REQUIRED)
 find_package(Threads REQUIRED)
-find_package(Utils REQUIRED)
 find_package(QtCommunicatorPlugin REQUIRED)
 
 
@@ -35,7 +44,7 @@ set(HEADERS
   include/broadcaster.h
 )
 
-add_library(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME} STATIC
     ${SRC}
     ${HEADERS}
 )
@@ -46,7 +55,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     PRIVATE src)
 
 target_link_libraries(${PROJECT_NAME} 
-Qt5::Core Qt5::Network Threads::Threads Utils QtCommunicatorPlugin
+Qt5::Core Qt5::Network Threads::Threads QtCommunicatorPlugin
 )
 
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Config

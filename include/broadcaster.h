@@ -9,7 +9,8 @@
 #include <stdio.h>
 
 #include <mqt.h>
-#include <utils.h>
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
 
 class Broadcaster : public QObject {
   Q_OBJECT
