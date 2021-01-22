@@ -8,9 +8,8 @@
 #include <QVector>
 #include <stdio.h>
 
-#include <mqt.h>
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/basic_file_sink.h"
+#include "../../QTCommunicatorPlugin/include/mqt.h"
+#include "../../src/structures.h"
 
 class Broadcaster : public QObject {
   Q_OBJECT
