@@ -8,7 +8,7 @@
 #include <QVector>
 #include <stdio.h>
 
-#include "../../QTCommunicatorPlugin/include/mqt.h"
+#include "../../QtCommunicatorPlugin/include/mqt.h"
 #include "../../src/structures.h"
 
 class Broadcaster : public QObject {
@@ -28,6 +28,7 @@ public slots:
   void onUnsubscribe(const qint32 topic);
   void onNewMessage(const QByteArray a_message);
   void onSendCommand(const qint32 topic, const QJsonObject json);
+  void onSendImage(const qint32 topic, QByteArray image);
   void onConnected();
   void onDisconnected();
 
@@ -38,6 +39,7 @@ signals:
   void newMessage(QJsonObject const &a_json);
   void connected();
   void disconnected();
+  //void updateImage(QByteArray image);
 
 private:
   QString m_ip{};
