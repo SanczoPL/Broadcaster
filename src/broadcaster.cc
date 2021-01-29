@@ -5,6 +5,9 @@ constexpr auto PORT{ "Port" };
 constexpr auto PID{ "Pid" };
 constexpr auto ID{ "Id" };
 constexpr auto COMMAND{ "Command" };
+constexpr auto PING{ "Ping" };
+constexpr auto MESSAGE_TYPE{ "MessageType" };
+constexpr auto TIME{ "Time" };
 
 auto constexpr MY_ID{ 3 };
 
@@ -44,10 +47,18 @@ void Broadcaster::onSubscribe(qint32 topic) {
 	emit(subscribeRequest(topics));
 }
 
+void Broadcaster::onSubscribe(QVector<qint32> topics) {
+	emit(subscribeRequest(topics));
+}
+
 void Broadcaster::onUnsubscribe(qint32 topic) {
 	Logger->trace("Broadcaster::onUnsubscribe() topic:{}", topic);
 	QVector<qint32> topics{};
 	topics.push_back(topic);
+	emit(unsubscribeRequest(topics));
+}
+
+void Broadcaster::onUnsubscribe(QVector<qint32> topics) {
 	emit(unsubscribeRequest(topics));
 }
 
@@ -65,44 +76,36 @@ void Broadcaster::onNewMessage(QByteArray const a_message) {
 		Logger->trace("Broadcaster::onNewMessage() a_message.size():{} m_header.size:{}", a_message.size() - 20, m_header.size);
 		Logger->trace("Broadcaster::onNewMessage() message.type() :{} ", message.type());
 
-		if (message.type() == Message::JSON)
-		{
-			Logger->warn("Recived msg that is  UniMessage::JSON");
-		}
-		else if (message.type() == Message::BINARY)
+		
+		if (message.type() == Message::BINARY)
 		{
 			Logger->warn("Recived message that is UniMessage::BINARY or UniMessage::JSON");
 			Logger->warn("else if (message.topic() == 3)");
 			QByteArray data = message.content();
 			emit(updateImage(data));
 		}
-
-		Logger->trace(
-			"Broadcaster::onNewMessage() a_message.size():{} m_header.size:{}",
-			a_message.size() - 20, m_header.size);
-		if (message.isValid()) {
-			auto jDoc{ QJsonDocument::fromJson(message.content()) };
-			if (!jDoc.isObject()) {
-				Logger->trace("Broadcaster::onNewMessage() Recived invalid Message");
+		if (message.type() == Message::JSON)
+		{
+			Logger->warn("Recived msg that is  UniMessage::JSON");
+			if (message.isValid()) {
+				auto jDoc{ QJsonDocument::fromJson(message.content()) };
+				if (!jDoc.isObject()) {
+					Logger->trace("Broadcaster::onNewMessage() Recived invalid Message");
+				}
+				jOut = jDoc.object()[COMMAND].toObject();
+				emit(newMessage(jOut));
+				QByteArray stateData{ QJsonDocument{jOut}.toJson(QJsonDocument::Compact) };
+				Logger->trace("Broadcaster::onNewMessage from:{} \n{}", message.topic(), stateData.toStdString().c_str());
 			}
-
-			jOut = jDoc.object()[COMMAND].toObject();
 		}
 	}
-	emit(newMessage(jOut));
-	QByteArray stateData{ QJsonDocument{jOut}.toJson(QJsonDocument::Compact) };
-	Message msg{};
-	msg.fromData(stateData, Message::JSON, MY_ID, 1);
-	Logger->trace("Broadcaster::onNewMessage from:{} \n{}", message.topic(),
-		stateData.toStdString().c_str());
 }
 
 void Broadcaster::onSendCommand(const qint32 topic, const QJsonObject json) {
 	Message msg{};
 	QByteArray stateData{ QJsonDocument{json}.toJson(QJsonDocument::Compact) };
 	msg.fromData(stateData, Message::JSON, MY_ID, topic);
-	Logger->trace("Broadcaster::onSendCommand to:{} \n{}", topic,
-		stateData.toStdString().c_str());
+	Logger->trace("Broadcaster::onSendCommand to:{} \n{}", topic, stateData.toStdString().c_str());
 	emit(sendMessageRequest(msg.rawData()));
 }
 
@@ -110,6 +113,17 @@ void Broadcaster::onSendImage(const qint32 topic, QByteArray image) {
 	Message msg{};
 	msg.fromData(image, Message::BINARY, MY_ID, topic);
 	Logger->trace("Broadcaster::onSendImage to:{}", topic);
+	emit(sendMessageRequest(msg.rawData()));
+}
+
+void Broadcaster::onSendPing(const qint32 idSender, const qint32 topic) {
+	quint64 _time = QDateTime::currentMSecsSinceEpoch();
+	QJsonObject json = { {MESSAGE_TYPE, PING}, {TIME, QString::number(_time)} , {ID, idSender} };
+	QJsonObject cmd = { {COMMAND, json} };
+	Message msg{};
+	QByteArray stateData{ QJsonDocument{cmd}.toJson(QJsonDocument::Compact) };
+	msg.fromData(stateData, Message::BINARY, MY_ID, topic);
+	Logger->trace("Broadcaster::onSendPing() to:{}", topic);
 	emit(sendMessageRequest(msg.rawData()));
 }
 

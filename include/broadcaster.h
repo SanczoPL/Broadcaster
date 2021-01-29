@@ -26,9 +26,12 @@ public slots:
   void onConnect();
   void onSubscribe(const qint32 topic);
   void onUnsubscribe(const qint32 topic);
+  void onSubscribe(QVector<qint32> topics);
+  void onUnsubscribe(QVector<qint32> topics);
   void onNewMessage(const QByteArray a_message);
   void onSendCommand(const qint32 topic, const QJsonObject json);
   void onSendImage(const qint32 topic, QByteArray image);
+  void onSendPing(const qint32 idSender, const qint32 topic);
   void onConnected();
   void onDisconnected();
 
