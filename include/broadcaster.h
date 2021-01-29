@@ -39,7 +39,7 @@ signals:
   void newMessage(QJsonObject const &a_json);
   void connected();
   void disconnected();
-  //void updateImage(QByteArray image);
+  void updateImage(QByteArray image);
 
 private:
   QString m_ip{};

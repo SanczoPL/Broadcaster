@@ -74,8 +74,7 @@ void Broadcaster::onNewMessage(QByteArray const a_message) {
 			Logger->warn("Recived message that is UniMessage::BINARY or UniMessage::JSON");
 			Logger->warn("else if (message.topic() == 3)");
 			QByteArray data = message.content();
-			cv::Mat decodedMat = cv::Mat(24, 32, CV_8UC1, data.data());
-			cv::resize(decodedMat, decodedMat, cv::Size(320, 240), 0, 0, cv::INTER_NEAREST);
+			emit(updateImage(data));
 		}
 
 		Logger->trace(
