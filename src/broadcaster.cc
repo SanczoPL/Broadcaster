@@ -76,9 +76,6 @@ void Broadcaster::onNewMessage(QByteArray const a_message) {
 			QByteArray data = message.content();
 			cv::Mat decodedMat = cv::Mat(24, 32, CV_8UC1, data.data());
 			cv::resize(decodedMat, decodedMat, cv::Size(320, 240), 0, 0, cv::INTER_NEAREST);
-			//cv::imshow("decodedMat", decodedMat);
-			//cv::waitKey(1);
-			//emit(updateImage(data));
 		}
 
 		Logger->trace(
@@ -111,10 +108,7 @@ void Broadcaster::onSendCommand(const qint32 topic, const QJsonObject json) {
 }
 
 void Broadcaster::onSendImage(const qint32 topic, QByteArray image) {
-	//Message msg{ image };
 	Message msg{};
-
-	//QByteArray stateData{ QJsonDocument{json}.toJson(QJsonDocument::Compact) };
 	msg.fromData(image, Message::BINARY, MY_ID, topic);
 	Logger->trace("Broadcaster::onSendImage to:{}", topic);
 	emit(sendMessageRequest(msg.rawData()));
