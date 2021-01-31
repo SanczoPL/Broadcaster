@@ -17,11 +17,12 @@ if (WIN32)
 	list(APPEND CMAKE_PREFIX_PATH "E:\\Qt\\5.12.8\\msvc2017_64")
 endif (WIN32)
 
+find_package(IncludeSpdlog)
+add_subdirectory(QtCommunicatorPlugin)
+
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Network REQUIRED)
 find_package(Threads REQUIRED)
-
-add_subdirectory(QtCommunicatorPlugin)
 
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -49,7 +50,5 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<INSTALL_INTERFACE:include>
     PRIVATE src)
 
-target_link_libraries(${PROJECT_NAME} 
-Qt5::Core Qt5::Network Threads::Threads QtCommunicatorPlugin
-)
-
+target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network Threads::Threads)
+target_link_libraries(${PROJECT_NAME} IncludeSpdlog QtCommunicatorPlugin)
