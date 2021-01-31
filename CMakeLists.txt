@@ -14,19 +14,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAGS_COMMON}")
 set(CMAKE_AUTOMOC ON)
 
 if (WIN32)
-	set (CMAKE_PREFIX_PATH "D:\\opencv\\build")
-	list(APPEND CMAKE_PREFIX_PATH "E:\\repo\\vcpkg\\installed\\x64-windows")
-	list(APPEND CMAKE_PREFIX_PATH "D:\\Qt\\Qt5.12.8\\5.12.8\\msvc2017_64")
-	list(APPEND CMAKE_PREFIX_PATH "E:\\repo\\ConfigReader\\build")
-	#list(APPEND CMAKE_PREFIX_PATH "E:\\repo\\QtCommunicatorPlugin\\build")
-	find_package(spdlog CONFIG REQUIRED)
-	find_package(ConfigReader REQUIRED)
+	list(APPEND CMAKE_PREFIX_PATH "E:\\Qt\\5.12.8\\msvc2017_64")
 endif (WIN32)
 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Network REQUIRED)
 find_package(Threads REQUIRED)
-find_package(QtCommunicatorPlugin REQUIRED)
+
+add_subdirectory(QtCommunicatorPlugin)
 
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -57,16 +52,4 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_link_libraries(${PROJECT_NAME} 
 Qt5::Core Qt5::Network Threads::Threads QtCommunicatorPlugin
 )
-
-install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Config
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-
-install(TARGETS ${PROJECT_NAME} DESTINATION lib)
-install(FILES ${HEADERS} DESTINATION include)
-install(EXPORT ${PROJECT_NAME}Config DESTINATION share/${PROJECT_NAME}/cmake)
-
-export(TARGETS ${PROJECT_NAME} FILE ${PROJECT_NAME}Config.cmake)
 
