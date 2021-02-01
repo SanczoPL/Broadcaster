@@ -93,6 +93,10 @@ void Broadcaster::onNewMessage(QByteArray const a_message) {
 					Logger->trace("Broadcaster::onNewMessage() Recived invalid Message");
 				}
 				jOut = jDoc.object()[COMMAND].toObject();
+				if(jOut[MESSAGE_TYPE].toString() == PING)
+				{
+					onPing(jOut);
+				}
 				emit(newMessage(jOut));
 				QByteArray stateData{ QJsonDocument{jOut}.toJson(QJsonDocument::Compact) };
 				Logger->trace("Broadcaster::onNewMessage from:{} \n{}", message.topic(), stateData.toStdString().c_str());
@@ -122,8 +126,18 @@ void Broadcaster::onSendPing(const qint32 idSender, const qint32 topic) {
 	QJsonObject cmd = { {COMMAND, json} };
 	Message msg{};
 	QByteArray stateData{ QJsonDocument{cmd}.toJson(QJsonDocument::Compact) };
-	msg.fromData(stateData, Message::BINARY, MY_ID, topic);
+	msg.fromData(stateData, Message::JSON, MY_ID, topic);
 	Logger->trace("Broadcaster::onSendPing() to:{}", topic);
+	emit(sendMessageRequest(msg.rawData()));
+}
+
+void Broadcaster::onPing(QJsonObject ping) {
+	qint32 topic = ping[ID].toInt();
+	QJsonObject cmd = { {COMMAND, ping} };
+	Message msg{};
+	QByteArray stateData{ QJsonDocument{cmd}.toJson(QJsonDocument::Compact) };
+	msg.fromData(stateData, Message::JSON, MY_ID, topic);
+	Logger->trace("Broadcaster::onPing() to:{}", topic);
 	emit(sendMessageRequest(msg.rawData()));
 }
 

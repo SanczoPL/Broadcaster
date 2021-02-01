@@ -20,6 +20,7 @@ public:
 
 private:
   MQt m_IO{};
+  void onPing(QJsonObject ping);
 
 public slots:
   void configure(const QJsonObject &a_config);
