@@ -63,43 +63,43 @@ void Broadcaster::onUnsubscribe(QVector<qint32> topics) {
 }
 
 void Broadcaster::onNewMessage(QByteArray const a_message) {
-	Logger->warn("Broadcaster::onNewMessage(QByteArray const a_message)");
+	Logger->trace("Broadcaster::onNewMessage(QByteArray const a_message)");
 	Message message{};
 	message.parse(a_message);
 	QJsonObject jOut{ {"none", "none"} };
 	bool ret = message.parse(a_message);
 	if (ret <= 0) {
-		Logger->warn("Broadcaster::onNewMessage() msg not correct");
+		Logger->error("Broadcaster::onNewMessage() msg not correct");
 	}
 	else {
 		Message::Header m_header = message.header();
 		Logger->trace("Broadcaster::onNewMessage() a_message.size():{} m_header.size:{}", a_message.size() - 20, m_header.size);
-		Logger->trace("Broadcaster::onNewMessage() message.type() :{} ", message.type());
-
 		
 		if (message.type() == Message::BINARY)
 		{
-			Logger->warn("Recived message that is UniMessage::BINARY or UniMessage::JSON");
-			Logger->warn("else if (message.topic() == 3)");
+			Logger->debug("Recived message that is Message::BINARY");
 			QByteArray data = message.content();
 			emit(updateImage(data));
 		}
 		if (message.type() == Message::JSON)
 		{
-			Logger->warn("Recived msg that is  UniMessage::JSON");
+			Logger->debug("Recived msg that is Message::JSON");
 			if (message.isValid()) {
 				auto jDoc{ QJsonDocument::fromJson(message.content()) };
 				if (!jDoc.isObject()) {
-					Logger->trace("Broadcaster::onNewMessage() Recived invalid Message");
+					Logger->error("Broadcaster::onNewMessage() Recived invalid  Message::JSON");
 				}
 				jOut = jDoc.object()[COMMAND].toObject();
 				if(jOut[MESSAGE_TYPE].toString() == PING)
 				{
+					Logger->debug("Message::JSON is a ping message");
 					onPing(jOut);
 				}
-				emit(newMessage(jOut));
-				QByteArray stateData{ QJsonDocument{jOut}.toJson(QJsonDocument::Compact) };
-				Logger->trace("Broadcaster::onNewMessage from:{} \n{}", message.topic(), stateData.toStdString().c_str());
+				else {
+					emit(newMessage(jOut));
+					QByteArray stateData{ QJsonDocument{jOut}.toJson(QJsonDocument::Compact) };
+					Logger->trace("Broadcaster::onNewMessage from:{} \n{}", message.topic(), stateData.toStdString().c_str());
+				}
 			}
 		}
 	}
@@ -133,11 +133,12 @@ void Broadcaster::onSendPing(const qint32 idSender, const qint32 topic) {
 
 void Broadcaster::onPing(QJsonObject ping) {
 	qint32 topic = ping[ID].toInt();
+	Logger->trace("Broadcaster::onPing() to:{}", topic);
 	QJsonObject cmd = { {COMMAND, ping} };
 	Message msg{};
 	QByteArray stateData{ QJsonDocument{cmd}.toJson(QJsonDocument::Compact) };
 	msg.fromData(stateData, Message::JSON, MY_ID, topic);
-	Logger->trace("Broadcaster::onPing() to:{}", topic);
+	
 	emit(sendMessageRequest(msg.rawData()));
 }
 
