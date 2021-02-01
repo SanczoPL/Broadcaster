@@ -123,14 +123,14 @@ void Broadcaster::onSendImage(const qint32 topic, QByteArray image) {
 	emit(sendMessageRequest(msg.rawData()));
 }
 
-void Broadcaster::onSendPing(const qint32 idSender, const qint32 topic) {
+void Broadcaster::onSendPing(const qint32 topic) {
 	quint64 _time = QDateTime::currentMSecsSinceEpoch();
-	QJsonObject json = { {MESSAGE_TYPE, PING}, {TIME, QString::number(_time)} , {ID, idSender} };
+	QJsonObject json = { {MESSAGE_TYPE, PING}, {TIME, QString::number(_time)} , {ID, m_id} };
 	QJsonObject cmd = { {COMMAND, json} };
 	Message msg{};
 	QByteArray stateData{ QJsonDocument{cmd}.toJson(QJsonDocument::Compact) };
 	msg.fromData(stateData, Message::JSON, m_id, topic);
-	Logger->trace("Broadcaster::onSendPing() from {} to:{}",idSender, topic);
+	Logger->trace("Broadcaster::onSendPing() from {} to:{}", m_id, topic);
 	emit(sendMessageRequest(msg.rawData()));
 }
 

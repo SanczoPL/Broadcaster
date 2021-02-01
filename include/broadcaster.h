@@ -32,7 +32,7 @@ public slots:
   void onNewMessage(const QByteArray a_message);
   void onSendCommand(const qint32 topic, const QJsonObject json);
   void onSendImage(const qint32 topic, QByteArray image);
-  void onSendPing(const qint32 idSender, const qint32 topic);
+  void onSendPing(const qint32 topic);
   void onConnected();
   void onDisconnected();
 
