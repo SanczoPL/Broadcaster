@@ -44,6 +44,7 @@ signals:
   void connected();
   void disconnected();
   void updateImage(QByteArray image);
+  void updatePing(QJsonObject ping);
 
 private:
   QString m_ip{};
