@@ -48,5 +48,6 @@ signals:
 private:
   QString m_ip{};
   quint16 m_port{};
+  qint32 m_id{};
 };
 #endif // BROADCASTER_H

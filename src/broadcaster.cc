@@ -9,16 +9,18 @@ constexpr auto PING{ "Ping" };
 constexpr auto MESSAGE_TYPE{ "MessageType" };
 constexpr auto TIME{ "Time" };
 
-auto constexpr MY_ID{ 3 };
-
-Broadcaster::Broadcaster(QJsonObject const& a_config) {
+Broadcaster::Broadcaster(QJsonObject const& a_config) 
+	: m_id{ a_config[ID].toInt() } 
+{
 	spdlog::info("Broadcaster::Broadcaster()");
 	configure(a_config);
 }
 
 Broadcaster::~Broadcaster() {}
 
-void Broadcaster::configure(QJsonObject const& a_config) {
+void Broadcaster::configure(QJsonObject const& a_config) 
+	
+{
 	spdlog::trace("Broadcaster::configure()");
 	QObject::connect(this, &Broadcaster::subscribeRequest, &m_IO,
 		&MQt::onSubscribe);
@@ -31,8 +33,9 @@ void Broadcaster::configure(QJsonObject const& a_config) {
 	QObject::connect(&m_IO, &MQt::disconnected, this,
 		&Broadcaster::onDisconnected);
 
-	m_ip = (a_config[IP].toString());
-	m_port = (static_cast<quint16>(a_config[PORT].toInt()));
+	m_ip = a_config[IP].toString();
+	m_id = a_config[ID].toInt();
+	m_port = static_cast<quint16>(a_config[PORT].toInt());
 	onConnect();
 	spdlog::info("Broadcaster::configure() ip:{} port:{}", m_ip.toStdString(),
 		QString::number(m_port).toStdString());
@@ -108,14 +111,14 @@ void Broadcaster::onNewMessage(QByteArray const a_message) {
 void Broadcaster::onSendCommand(const qint32 topic, const QJsonObject json) {
 	Message msg{};
 	QByteArray stateData{ QJsonDocument{json}.toJson(QJsonDocument::Compact) };
-	msg.fromData(stateData, Message::JSON, MY_ID, topic);
+	msg.fromData(stateData, Message::JSON, m_id, topic);
 	Logger->trace("Broadcaster::onSendCommand to:{} \n{}", topic, stateData.toStdString().c_str());
 	emit(sendMessageRequest(msg.rawData()));
 }
 
 void Broadcaster::onSendImage(const qint32 topic, QByteArray image) {
 	Message msg{};
-	msg.fromData(image, Message::BINARY, MY_ID, topic);
+	msg.fromData(image, Message::BINARY, m_id, topic);
 	Logger->trace("Broadcaster::onSendImage to:{}", topic);
 	emit(sendMessageRequest(msg.rawData()));
 }
@@ -126,7 +129,7 @@ void Broadcaster::onSendPing(const qint32 idSender, const qint32 topic) {
 	QJsonObject cmd = { {COMMAND, json} };
 	Message msg{};
 	QByteArray stateData{ QJsonDocument{cmd}.toJson(QJsonDocument::Compact) };
-	msg.fromData(stateData, Message::JSON, MY_ID, topic);
+	msg.fromData(stateData, Message::JSON, m_id, topic);
 	Logger->trace("Broadcaster::onSendPing() to:{}", topic);
 	emit(sendMessageRequest(msg.rawData()));
 }
@@ -137,7 +140,7 @@ void Broadcaster::onPing(QJsonObject ping) {
 	QJsonObject cmd = { {COMMAND, ping} };
 	Message msg{};
 	QByteArray stateData{ QJsonDocument{cmd}.toJson(QJsonDocument::Compact) };
-	msg.fromData(stateData, Message::JSON, MY_ID, topic);
+	msg.fromData(stateData, Message::JSON, m_id, topic);
 	
 	emit(sendMessageRequest(msg.rawData()));
 }
