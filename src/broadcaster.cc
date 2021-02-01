@@ -130,7 +130,7 @@ void Broadcaster::onSendPing(const qint32 idSender, const qint32 topic) {
 	Message msg{};
 	QByteArray stateData{ QJsonDocument{cmd}.toJson(QJsonDocument::Compact) };
 	msg.fromData(stateData, Message::JSON, m_id, topic);
-	Logger->trace("Broadcaster::onSendPing() to:{}", topic);
+	Logger->trace("Broadcaster::onSendPing() from {} to:{}",idSender, topic);
 	emit(sendMessageRequest(msg.rawData()));
 }
 
