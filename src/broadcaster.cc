@@ -67,7 +67,7 @@ void Broadcaster::onUnsubscribe(QVector<qint32> topics) {
 
 void Broadcaster::onNewMessage(QByteArray const a_message) {
 	Logger->trace("Broadcaster::onNewMessage(QByteArray const a_message)");
-	Message message{};
+	MQtMessage message{};
 	message.parse(a_message);
 	QJsonObject jOut{ {"none", "none"} };
 	bool ret = message.parse(a_message);
@@ -75,16 +75,16 @@ void Broadcaster::onNewMessage(QByteArray const a_message) {
 		Logger->error("Broadcaster::onNewMessage() msg not correct");
 	}
 	else {
-		Message::Header m_header = message.header();
+		MQtMessage::Header m_header = message.header();
 		Logger->trace("Broadcaster::onNewMessage() a_message.size():{} m_header.size:{}", a_message.size() - 20, m_header.size);
 		
-		if (message.type() == Message::BINARY)
+		if (message.type() == MQtMessage::BINARY)
 		{
 			Logger->debug("Recived message that is Message::BINARY");
 			QByteArray data = message.content();
 			emit(updateImage(data));
 		}
-		if (message.type() == Message::JSON)
+		if (message.type() == MQtMessage::JSON)
 		{
 			Logger->debug("Recived msg that is Message::JSON");
 			if (message.isValid()) {
@@ -95,7 +95,7 @@ void Broadcaster::onNewMessage(QByteArray const a_message) {
 				jOut = jDoc.object()[COMMAND].toObject();
 				if(jOut[MESSAGE_TYPE].toString() == PING)
 				{
-					Logger->debug("Message::JSON is a ping message");
+					Logger->debug("MQtMessage::JSON is a ping message");
 					emit(updatePing(jOut));
 				}
 				else {
@@ -109,16 +109,16 @@ void Broadcaster::onNewMessage(QByteArray const a_message) {
 }
 
 void Broadcaster::onSendCommand(const qint32 topic, const QJsonObject json) {
-	Message msg{};
+	MQtMessage msg{};
 	QByteArray stateData{ QJsonDocument{json}.toJson(QJsonDocument::Compact) };
-	msg.fromData(stateData, Message::JSON, m_id, topic);
+	msg.fromData(stateData, MQtMessage::JSON, m_id, topic);
 	Logger->trace("Broadcaster::onSendCommand to:{} \n{}", topic, stateData.toStdString().c_str());
 	emit(sendMessageRequest(msg.rawData()));
 }
 
 void Broadcaster::onSendImage(const qint32 topic, QByteArray image) {
-	Message msg{};
-	msg.fromData(image, Message::BINARY, m_id, topic);
+	MQtMessage msg{};
+	msg.fromData(image, MQtMessage::BINARY, m_id, topic);
 	Logger->trace("Broadcaster::onSendImage from {} to:{}", m_id, topic);
 	emit(sendMessageRequest(msg.rawData()));
 }
@@ -127,9 +127,9 @@ void Broadcaster::onSendPing(const qint32 topic) {
 	//quint64 _time = QDateTime::currentMSecsSinceEpoch();
 	QJsonObject json = { {MESSAGE_TYPE, PING}, {TIME, QDateTime().currentDateTime().toString("hh:mm:ss AP dd/MM/yyyy")} , {ID, m_id} };
 	QJsonObject cmd = { {COMMAND, json} };
-	Message msg{};
+	MQtMessage msg{};
 	QByteArray stateData{ QJsonDocument{cmd}.toJson(QJsonDocument::Compact) };
-	msg.fromData(stateData, Message::JSON, m_id, topic);
+	msg.fromData(stateData, MQtMessage::JSON, m_id, topic);
 	Logger->trace("Broadcaster::onSendPing() from {} to:{}", m_id, topic);
 	emit(sendMessageRequest(msg.rawData()));
 }
