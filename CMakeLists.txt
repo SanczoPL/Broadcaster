@@ -18,7 +18,7 @@ if (WIN32)
 endif (WIN32)
 
 find_package(IncludeSpdlog)
-add_subdirectory(QtCommunicatorPlugin)
+find_package(QtCommunicatorPlugin)
 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Network REQUIRED)
