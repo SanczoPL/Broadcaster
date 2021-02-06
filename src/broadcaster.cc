@@ -12,7 +12,8 @@ constexpr auto TIME{ "Time" };
 Broadcaster::Broadcaster(QJsonObject const& a_config) 
 	: m_id{ a_config[ID].toInt() } 
 {
-	spdlog::info("Broadcaster::Broadcaster()");
+	//Logger->set_pattern("[%Y-%m-%d] [%H:%M:%S.%e] [%t] [%^%l%$] %v");
+	Logger->info("Broadcaster::Broadcaster()");
 	configure(a_config);
 }
 
@@ -21,7 +22,7 @@ Broadcaster::~Broadcaster() {}
 void Broadcaster::configure(QJsonObject const& a_config) 
 	
 {
-	spdlog::trace("Broadcaster::configure()");
+	Logger->trace("Broadcaster::configure()");
 	QObject::connect(this, &Broadcaster::subscribeRequest, &m_IO,
 		&MQt::onSubscribe);
 	QObject::connect(this, &Broadcaster::unsubscribeRequest, &m_IO,
@@ -37,14 +38,14 @@ void Broadcaster::configure(QJsonObject const& a_config)
 	m_id = a_config[ID].toInt();
 	m_port = static_cast<quint16>(a_config[PORT].toInt());
 	onConnect();
-	spdlog::info("Broadcaster::configure() ip:{} port:{}", m_ip.toStdString(),
+	Logger->info("Broadcaster::configure() ip:{} port:{}", m_ip.toStdString(),
 		QString::number(m_port).toStdString());
 }
 
 void Broadcaster::onConnect() { m_IO.startConnection(m_ip, m_port); }
 
-void Broadcaster::onSubscribe(qint32 topic) {
-	Logger->trace("Broadcaster::onSubscribe() topic:{}", topic);
+void Broadcaster::onSubscribeSingleTopic(qint32 topic) {
+	Logger->trace("Broadcaster::onSubscribeSingleTopic() topic:{}", topic);
 	QVector<qint32> topics{};
 	topics.push_back(topic);
 	emit(subscribeRequest(topics));
@@ -54,8 +55,8 @@ void Broadcaster::onSubscribe(QVector<qint32> topics) {
 	emit(subscribeRequest(topics));
 }
 
-void Broadcaster::onUnsubscribe(qint32 topic) {
-	Logger->trace("Broadcaster::onUnsubscribe() topic:{}", topic);
+void Broadcaster::onUnsubscribeSingleTopic(qint32 topic) {
+	Logger->trace("Broadcaster::onUnsubscribeSingleTopic() topic:{}", topic);
 	QVector<qint32> topics{};
 	topics.push_back(topic);
 	emit(unsubscribeRequest(topics));

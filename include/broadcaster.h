@@ -12,43 +12,43 @@
 #include "../../src/structures.h"
 
 class Broadcaster : public QObject {
-  Q_OBJECT
+	Q_OBJECT
 
 public:
-  Broadcaster(QJsonObject const &a_config);
-  ~Broadcaster();
+	Broadcaster(QJsonObject const& a_config);
+	~Broadcaster();
 
 private:
-  MQt m_IO{};
-  void onPing(QJsonObject ping);
+	MQt m_IO{};
+	void onPing(QJsonObject ping);
 
 public slots:
-  void configure(const QJsonObject &a_config);
-  void onConnect();
-  void onSubscribe(const qint32 topic);
-  void onUnsubscribe(const qint32 topic);
-  void onSubscribe(QVector<qint32> topics);
-  void onUnsubscribe(QVector<qint32> topics);
-  void onNewMessage(const QByteArray a_message);
-  void onSendCommand(const qint32 topic, const QJsonObject json);
-  void onSendImage(const qint32 topic, QByteArray image);
-  void onSendPing(const qint32 topic);
-  void onConnected();
-  void onDisconnected();
+	void configure(const QJsonObject& a_config);
+	void onConnect();
+	void onSubscribeSingleTopic(const qint32 topic);
+	void onUnsubscribeSingleTopic(const qint32 topic);
+	void onSubscribe(QVector<qint32> topics);
+	void onUnsubscribe(QVector<qint32> topics);
+	void onNewMessage(const QByteArray a_message);
+	void onSendCommand(const qint32 topic, const QJsonObject json);
+	void onSendImage(const qint32 topic, QByteArray image);
+	void onSendPing(const qint32 topic);
+	void onConnected();
+	void onDisconnected();
 
 signals:
-  void subscribeRequest(QVector<qint32> const a_topics);
-  void unsubscribeRequest(QVector<qint32> const a_topics);
-  void sendMessageRequest(QByteArray const a_message);
-  void newMessage(QJsonObject const &a_json);
-  void connected();
-  void disconnected();
-  void updateImage(QByteArray image);
-  void updatePing(QJsonObject ping);
+	void subscribeRequest(QVector<qint32> const a_topics);
+	void unsubscribeRequest(QVector<qint32> const a_topics);
+	void sendMessageRequest(QByteArray const a_message);
+	void newMessage(QJsonObject const& a_json);
+	void connected();
+	void disconnected();
+	void updateImage(QByteArray image);
+	void updatePing(QJsonObject ping);
 
 private:
-  QString m_ip{};
-  quint16 m_port{};
-  qint32 m_id{};
+	QString m_ip{};
+	quint16 m_port{};
+	qint32 m_id{};
 };
 #endif // BROADCASTER_H
