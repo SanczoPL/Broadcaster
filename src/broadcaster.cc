@@ -138,7 +138,8 @@ void Broadcaster::onSendImage(const qint32 topic, QByteArray image) {
 }
 
 void Broadcaster::onSendPing(const qint32 topic) {
-	QJsonObject json = { {MESSAGE_TYPE, PING}, {TIME, QDateTime().currentDateTime().toString("hh:mm:ss AP dd/MM/yyyy")} , {ID, m_id} };
+	qint64 now = QDateTime::currentMSecsSinceEpoch();
+	QJsonObject json = { {MESSAGE_TYPE, PING}, {TIME, now} , {ID, m_id} };
 	QJsonObject cmd = { {COMMAND, json} };
 	MQtMessage msg{};
 	QByteArray stateData{ QJsonDocument{cmd}.toJson(QJsonDocument::Compact) };
@@ -154,7 +155,7 @@ void Broadcaster::onSendPingPong(QJsonObject json) {
 	MQtMessage msg{};
 	QByteArray stateData{ QJsonDocument{cmd}.toJson(QJsonDocument::Compact) };
 	msg.fromData(stateData, MQtMessage::JSON, m_id, topic);
-	Logger->trace("Broadcaster::onSendPing() from {} to:{}", m_id, topic);
+	Logger->error("Broadcaster::onSendPing() from {} to:{}", m_id, topic);
 	emit(sendMessageRequest(msg.rawData()));
 }
 
