@@ -138,7 +138,7 @@ void Broadcaster::onSendImage(const qint32 topic, QByteArray image) {
 }
 
 void Broadcaster::onSendPing(const qint32 topic) {
-	qint64 now = QDateTime::currentMSecsSinceEpoch();
+	qint32 now = qint32(QDateTime::currentMSecsSinceEpoch());
 	QJsonObject json = { {MESSAGE_TYPE, PING}, {TIME, now} , {ID, m_id} };
 	QJsonObject cmd = { {COMMAND, json} };
 	MQtMessage msg{};
