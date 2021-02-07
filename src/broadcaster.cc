@@ -6,6 +6,7 @@ constexpr auto PID{ "Pid" };
 constexpr auto ID{ "Id" };
 constexpr auto COMMAND{ "Command" };
 constexpr auto PING{ "Ping" };
+constexpr auto PING_PONG{ "PingPong" };
 constexpr auto MESSAGE_TYPE{ "MessageType" };
 constexpr auto TIME{ "Time" };
 constexpr auto ERROR_DATA{ "Error" };
@@ -91,7 +92,7 @@ void Broadcaster::onNewMessage(QByteArray const a_message) {
 		{
 			Logger->debug("Recived msg that is Message::JSON");
 			if (message.isValid()) {
-				auto jDoc{ QJsonDocument::fromJson(message.content()) };
+				const QJsonDocument jDoc{ QJsonDocument::fromJson(message.content()) };
 				if (!jDoc.isObject()) {
 					Logger->error("Broadcaster::onNewMessage() Recived invalid  Message::JSON");
 				}
@@ -99,9 +100,14 @@ void Broadcaster::onNewMessage(QByteArray const a_message) {
 				if(jOut[MESSAGE_TYPE].toString() == PING)
 				{
 					Logger->debug("MQtMessage::JSON is a ping message");
+					onSendPingPong(jOut);
+				}
+				else if (jOut[MESSAGE_TYPE].toString() == PING_PONG)
+				{
+					Logger->debug("MQtMessage::JSON is a ping message");
 					emit(updatePing(jOut));
 				}
-				if (jOut[MESSAGE_TYPE].toString() == ERROR_DATA)
+				else if (jOut[MESSAGE_TYPE].toString() == ERROR_DATA)
 				{
 					Logger->debug("MQtMessage::JSON is a error data message");
 					emit(updateError(jOut));
@@ -133,6 +139,17 @@ void Broadcaster::onSendImage(const qint32 topic, QByteArray image) {
 
 void Broadcaster::onSendPing(const qint32 topic) {
 	QJsonObject json = { {MESSAGE_TYPE, PING}, {TIME, QDateTime().currentDateTime().toString("hh:mm:ss AP dd/MM/yyyy")} , {ID, m_id} };
+	QJsonObject cmd = { {COMMAND, json} };
+	MQtMessage msg{};
+	QByteArray stateData{ QJsonDocument{cmd}.toJson(QJsonDocument::Compact) };
+	msg.fromData(stateData, MQtMessage::JSON, m_id, topic);
+	Logger->trace("Broadcaster::onSendPing() from {} to:{}", m_id, topic);
+	emit(sendMessageRequest(msg.rawData()));
+}
+
+void Broadcaster::onSendPingPong(QJsonObject json) {
+	json[MESSAGE_TYPE] = PING_PONG;
+	qint32 topic = json[ID].toInt();
 	QJsonObject cmd = { {COMMAND, json} };
 	MQtMessage msg{};
 	QByteArray stateData{ QJsonDocument{cmd}.toJson(QJsonDocument::Compact) };

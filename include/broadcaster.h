@@ -33,6 +33,7 @@ public slots:
 	void onSendCommand(const qint32 topic, const QJsonObject json);
 	void onSendImage(const qint32 topic, QByteArray image);
 	void onSendPing(const qint32 topic);
+	void onSendPingPong(QJsonObject json);
 	void onSendError(const qint32 topic, const qint32 error);
 	void onConnected();
 	void onDisconnected();
