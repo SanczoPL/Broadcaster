@@ -3,6 +3,7 @@ project(Broadcaster VERSION 0.0.1 DESCRIPTION "Broadcaster" LANGUAGES C CXX)
 
 set(TARGET_NAME "Broadcaster")
 set(DEFAULT_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE "Debug")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -50,7 +51,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<INSTALL_INTERFACE:include>
     PRIVATE src)
 
-target_link_libraries(${PROJECT_NAME} spdlog IncludeSpdlog ConfigReader QtCommunicatorPlugin)
+target_link_libraries(${PROJECT_NAME} QtCommunicatorPlugin)
 target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network Threads::Threads)
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
