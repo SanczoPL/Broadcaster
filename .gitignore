@@ -213,3 +213,4 @@ build/CMakeFiles/3.18.2/CompilerIdCXX/Debug/CompilerIdCXX.tlog/link.write.1.tlog
 build/CMakeFiles/3.18.2/x64/Debug/VCTargetsPath.recipe
 build/CMakeFiles/3.18.2/x64/Debug/VCTargetsPath.tlog/VCTargetsPath.lastbuildstate
 build/x64/Release/ALL_BUILD/ALL_BUILD.log
+build/install/include/broadcaster.h
