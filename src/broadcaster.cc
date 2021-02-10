@@ -99,12 +99,12 @@ void Broadcaster::onNewMessage(QByteArray const a_message) {
 				jOut = jDoc.object()[COMMAND].toObject();
 				if(jOut[MESSAGE_TYPE].toString() == PING)
 				{
-					Logger->debug("MQtMessage::JSON is a ping message");
+					Logger->trace("MQtMessage::JSON is a ping message");
 					onSendPingPong(jOut);
 				}
 				else if (jOut[MESSAGE_TYPE].toString() == PING_PONG)
 				{
-					Logger->debug("MQtMessage::JSON is a ping message");
+					Logger->debug("MQtMessage::JSON is a ping pong message");
 					emit(updatePing(jOut));
 				}
 				else if (jOut[MESSAGE_TYPE].toString() == ERROR_DATA)
@@ -155,7 +155,7 @@ void Broadcaster::onSendPingPong(QJsonObject json) {
 	MQtMessage msg{};
 	QByteArray stateData{ QJsonDocument{cmd}.toJson(QJsonDocument::Compact) };
 	msg.fromData(stateData, MQtMessage::JSON, m_id, topic);
-	Logger->error("Broadcaster::onSendPing() from {} to:{}", m_id, topic);
+	Logger->trace("Broadcaster::onSendPingPong() from {} to:{}", m_id, topic);
 	emit(sendMessageRequest(msg.rawData()));
 }
 
