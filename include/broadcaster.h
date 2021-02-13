@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 #include "mqt.h"
-#include "spdlog.h"
+#include "includespdlog.h"
 
 
 class Broadcaster : public QObject {
