@@ -230,3 +230,11 @@ build/CMakeFiles/3.10.2/CompilerIdCXX/CMakeCXXCompilerId.cpp
 build/CMakeFiles/Broadcaster.dir/cmake_clean_target.cmake
 build/CMakeFiles/Broadcaster_autogen.dir/AutogenInfo.cmake
 build/CMakeFiles/Broadcaster_autogen.dir/AutogenOldSettings.cmake
+build/install/lib/Broadcaster.lib
+build/install/share/Broadcaster/cmake/BroadcasterConfig-debug.cmake
+build/install/share/Broadcaster/cmake/BroadcasterConfig.cmake
+build/x64/Debug/INSTALL/INSTALL.recipe
+build/x64/Debug/INSTALL/INSTALL.tlog/CustomBuild.command.1.tlog
+build/x64/Debug/INSTALL/INSTALL.tlog/CustomBuild.read.1.tlog
+build/x64/Debug/INSTALL/INSTALL.tlog/CustomBuild.write.1.tlog
+build/x64/Debug/INSTALL/INSTALL.tlog/INSTALL.lastbuildstate
